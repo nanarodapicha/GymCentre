@@ -1,0 +1,19 @@
+﻿@page
+@model AccessDeniedModel
+
+@{
+    ViewData["Title"] = "Достъпът е отказан";
+}
+
+<div class="auth-page-wrapper">
+    <div class="auth-card text-center">
+        <div class="auth-header">
+            <h1>Достъпът е отказан</h1>
+            <p>Нямате необходимите права, за да отворите тази страница.</p>
+        </div>
+
+        <div class="auth-links mt-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary auth-main-btn">Към началото</a>
+        </div>
+    </div>
+</div>

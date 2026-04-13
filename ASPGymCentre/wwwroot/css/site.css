@@ -180,7 +180,6 @@ label {
     font-weight: 600;
 }
 
-/* normal blue buttons like Create can stay filled */
 .btn-primary:not(.action-btn) {
     background: #2d7ff9;
     border-color: #2d7ff9;
@@ -194,45 +193,12 @@ label {
         color: #ffffff;
     }
 
-/* table action buttons - outline style */
-.action-btn.btn-primary {
-    background: transparent;
-    color: #0d6efd;
-    border: 1px solid #0d6efd;
+.btn-danger,
+.btn-info,
+.btn-secondary {
+    border-radius: 10px;
+    font-weight: 600;
 }
-
-    .action-btn.btn-primary:hover,
-    .action-btn.btn-primary:focus {
-        background: #0d6efd;
-        color: #ffffff;
-        border-color: #0d6efd;
-    }
-
-.action-btn.btn-info {
-    background: transparent;
-    color: #0dcaf0;
-    border: 1px solid #0dcaf0;
-}
-
-    .action-btn.btn-info:hover,
-    .action-btn.btn-info:focus {
-        background: #0dcaf0;
-        color: #000000;
-        border-color: #0dcaf0;
-    }
-
-.action-btn.btn-danger {
-    background: transparent;
-    color: #dc3545;
-    border: 1px solid #dc3545;
-}
-
-    .action-btn.btn-danger:hover,
-    .action-btn.btn-danger:focus {
-        background: #dc3545;
-        color: #ffffff;
-        border-color: #dc3545;
-    }
 
 /* Tables */
 .table-responsive {
@@ -301,7 +267,7 @@ label {
     border: 1px solid #ccc;
 }
 
-/* Action buttons in tables */
+/* Action buttons */
 .action-buttons {
     display: flex;
     align-items: center;
@@ -320,144 +286,45 @@ label {
         white-space: nowrap;
     }
 
-/* Cards / Info sections */
-.info-page-box {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-    padding: 30px;
-    margin-top: 20px;
-    color: white;
-}
+        .action-btn.btn-primary {
+            background: transparent;
+            color: #0d6efd;
+            border: 1px solid #0d6efd;
+        }
 
-.info-page-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-}
+            .action-btn.btn-primary:hover,
+            .action-btn.btn-primary:focus {
+                background: #0d6efd;
+                color: #ffffff;
+                border-color: #0d6efd;
+            }
 
-.info-card {
-    background: rgba(255,255,255,0.04);
-    border-radius: 10px;
-    padding: 20px;
-    border: 1px solid rgba(255,255,255,0.08);
-}
+        .action-btn.btn-info {
+            background: transparent;
+            color: #0dcaf0;
+            border: 1px solid #0dcaf0;
+        }
 
-    .info-card h3 {
-        margin-bottom: 20px;
-    }
+            .action-btn.btn-info:hover,
+            .action-btn.btn-info:focus {
+                background: #0dcaf0;
+                color: #000000;
+                border-color: #0dcaf0;
+            }
 
-.contact-item {
-    margin-bottom: 20px;
-    font-size: 1.05rem;
-}
+        .action-btn.btn-danger {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
 
-.contact-form label {
-    margin-bottom: 6px;
-    display: block;
-    font-weight: 600;
-}
+            .action-btn.btn-danger:hover,
+            .action-btn.btn-danger:focus {
+                background: #dc3545;
+                color: #ffffff;
+                border-color: #dc3545;
+            }
 
-.contact-form .form-control {
-    margin-bottom: 16px;
-}
-
-.map-box,
-.map-responsive {
-    overflow: hidden;
-    border-radius: 10px;
-}
-
-/* Helpers */
-hr {
-    border-color: rgba(255,255,255,0.12);
-}
-
-.text-danger {
-    color: #ff8c8c !important;
-}
-
-/* Responsive */
-@media (max-width: 991px) {
-    .custom-menu,
-    .navbar-nav {
-        margin-top: 15px;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .menu-btn {
-        display: block;
-        width: 100%;
-    }
-
-    .login-area {
-        margin-left: 0;
-        margin-top: 10px;
-    }
-
-    .login-nav {
-        justify-content: flex-start;
-        flex-wrap: wrap;
-    }
-
-    .info-page-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .action-buttons {
-        flex-wrap: wrap;
-    }
-}
-/* Reservation cards */
-.reservation-section {
-    margin-top: 28px;
-    margin-bottom: 28px;
-}
-
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin-top: 18px;
-}
-
-.custom-card {
-    background: rgba(255,255,255,0.96);
-    color: #111827;
-    border-radius: 16px;
-    padding: 0;
-    border: 1px solid rgba(0,0,0,0.08);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-    .custom-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 14px 30px rgba(0,0,0,0.18);
-    }
-
-.custom-card-body {
-    padding: 22px;
-}
-
-.custom-card h4 {
-    color: #0b1a35;
-    margin-bottom: 16px;
-}
-
-.custom-card p {
-    margin-bottom: 10px;
-    color: #1f2937;
-}
-
-.reserved-card {
-    border-left: 5px solid #2d7ff9;
-}
-
-.alert {
-    border-radius: 12px;
-}
 /* Shared card layout */
 .section-title-row {
     display: flex;
@@ -528,46 +395,6 @@ hr {
     gap: 8px;
 }
 
-/* action buttons outline only */
-.action-btn.btn-primary {
-    background: transparent;
-    color: #0d6efd;
-    border: 1px solid #0d6efd;
-}
-
-    .action-btn.btn-primary:hover,
-    .action-btn.btn-primary:focus {
-        background: #0d6efd;
-        color: #ffffff;
-        border-color: #0d6efd;
-    }
-
-.action-btn.btn-info {
-    background: transparent;
-    color: #0dcaf0;
-    border: 1px solid #0dcaf0;
-}
-
-    .action-btn.btn-info:hover,
-    .action-btn.btn-info:focus {
-        background: #0dcaf0;
-        color: #000000;
-        border-color: #0dcaf0;
-    }
-
-.action-btn.btn-danger {
-    background: transparent;
-    color: #dc3545;
-    border: 1px solid #dc3545;
-}
-
-    .action-btn.btn-danger:hover,
-    .action-btn.btn-danger:focus {
-        background: #dc3545;
-        color: #ffffff;
-        border-color: #dc3545;
-    }
-
 .empty-box {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.14);
@@ -588,21 +415,21 @@ hr {
     margin-bottom: 12px;
 }
 
-@media (max-width: 768px) {
-    .custom-card-img {
-        height: 190px;
-    }
-
-    .custom-card-footer {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-        .custom-card-footer .btn {
-            width: 100%;
-        }
+/* Reservation cards */
+.reservation-section {
+    margin-top: 28px;
+    margin-bottom: 28px;
 }
-/* Details / Delete / Edit pages */
+
+.reserved-card {
+    border-left: 5px solid #2d7ff9;
+}
+
+.alert {
+    border-radius: 12px;
+}
+
+/* Details / Edit / Delete pages */
 .details-box,
 .form-page-box {
     background: rgba(255,255,255,0.04);
@@ -666,11 +493,6 @@ hr {
         border-color: rgba(255,255,255,0.45);
     }
 
-@media (max-width: 768px) {
-    .details-grid {
-        grid-template-columns: 1fr;
-    }
-}
 /* Home page */
 .home-hero {
     position: relative;
@@ -768,7 +590,172 @@ hr {
         line-height: 1.7;
     }
 
+/* Info sections */
+.info-page-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 20px;
+    color: white;
+}
+
+.info-page-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.info-card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+    .info-card h3 {
+        margin-bottom: 20px;
+    }
+
+.contact-item {
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+}
+
+.contact-form label {
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 600;
+}
+
+.contact-form .form-control {
+    margin-bottom: 16px;
+}
+
+.map-box,
+.map-responsive {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+/* Auth pages */
+.auth-page-wrapper {
+    min-height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 16px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 520px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 22px;
+    padding: 34px 30px;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.20);
+    backdrop-filter: blur(6px);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+    .auth-header h1 {
+        margin-bottom: 10px;
+        color: #ffffff;
+        font-weight: 800;
+    }
+
+    .auth-header p {
+        margin: 0;
+        color: rgba(255,255,255,0.85);
+        line-height: 1.6;
+    }
+
+.auth-form label {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.auth-form .form-control {
+    background: rgba(255,255,255,0.96);
+    border-radius: 12px;
+    min-height: 48px;
+}
+
+.auth-main-btn {
+    margin-top: 8px;
+    min-height: 48px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 12px;
+}
+
+.auth-checkbox {
+    color: #ffffff;
+}
+
+    .auth-checkbox .form-check-input {
+        margin-top: 0.3rem;
+    }
+
+.auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+}
+
+    .auth-links a {
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+/* Helpers */
+hr {
+    border-color: rgba(255,255,255,0.12);
+}
+
+.text-danger {
+    color: #ff8c8c !important;
+}
+
+/* Responsive */
 @media (max-width: 991px) {
+    .custom-menu,
+    .navbar-nav {
+        margin-top: 15px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .menu-btn {
+        display: block;
+        width: 100%;
+    }
+
+    .login-area {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .login-nav {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .info-page-grid,
+    .home-info-strip {
+        grid-template-columns: 1fr;
+    }
+
     .home-hero-title {
         font-size: 2.5rem;
     }
@@ -777,7 +764,26 @@ hr {
         font-size: 1.05rem;
     }
 
-    .home-info-strip {
+    .action-buttons {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .custom-card-img {
+        height: 190px;
+    }
+
+    .custom-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .custom-card-footer .btn {
+            width: 100%;
+        }
+
+    .details-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -794,5 +800,9 @@ hr {
 
     .home-hero-title {
         font-size: 2rem;
+    }
+
+    .auth-card {
+        padding: 26px 18px;
     }
 }

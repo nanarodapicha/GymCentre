@@ -1,0 +1,19 @@
+﻿@page
+@model LockoutModel
+
+@{
+    ViewData["Title"] = "Профилът е заключен";
+}
+
+<div class="auth-page-wrapper">
+    <div class="auth-card text-center">
+        <div class="auth-header">
+            <h1>Профилът е заключен</h1>
+            <p>Този профил е временно заключен. Опитайте отново по-късно.</p>
+        </div>
+
+        <div class="auth-links mt-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary auth-main-btn">Към началото</a>
+        </div>
+    </div>
+</div>
