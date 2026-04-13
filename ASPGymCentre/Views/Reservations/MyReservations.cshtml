@@ -1,0 +1,99 @@
+﻿@model IEnumerable<ASPGymCentre.Models.Reservation>
+@using ASPGymCentre.Models
+
+@{
+    ViewData["Title"] = "Моите резервации";
+    var availableExercises = ViewBag.AvailableExercises as List<Exercise> ?? new List<Exercise>();
+}
+
+<h1>Моите резервации</h1>
+
+@if (TempData["ReservationSuccess"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["ReservationSuccess"]
+    </div>
+}
+
+@if (TempData["ReservationError"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ReservationError"]
+    </div>
+}
+
+<div class="reservation-section">
+    <h2>Тренировки, които може да резервираш</h2>
+
+    @if (availableExercises.Any())
+    {
+        <div class="card-grid">
+            @foreach (var exercise in availableExercises)
+            {
+                var alreadyReserved = Model.Any(r => r.ExerciseId == exercise.Id);
+
+                <div class="custom-card">
+                    <div class="custom-card-body">
+                        <h4>@exercise.Plans?.Name</h4>
+
+                        <p><strong>Ден:</strong> @exercise.Day</p>
+                        <p><strong>Час:</strong> @exercise.StartTime - @exercise.EndTime</p>
+                        <p><strong>Инструктор:</strong> @exercise.Instructors?.Name</p>
+
+                        @if (alreadyReserved)
+                        {
+                            <span class="badge bg-success">Вече е резервирана</span>
+                        }
+                        else
+                        {
+                            <form asp-action="Reserve" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="exerciseId" value="@exercise.Id" />
+                                <button type="submit" class="btn btn-primary">Резервирай</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Няма налични тренировки.</p>
+    }
+</div>
+
+<hr />
+
+<div class="reservation-section">
+    <h2>Моите резервации</h2>
+
+    @if (Model.Any())
+    {
+        <div class="card-grid">
+            @foreach (var item in Model)
+            {
+                <div class="custom-card reserved-card">
+                    <div class="custom-card-body">
+                        <h4>@item.Exercises?.Plans?.Name</h4>
+
+                        <p><strong>Ден:</strong> @item.Exercises?.Day</p>
+                        <p><strong>Час:</strong> @item.Exercises?.StartTime - @item.Exercises?.EndTime</p>
+                        <p><strong>Инструктор:</strong> @item.Exercises?.Instructors?.Name</p>
+                        <p><strong>Създадена на:</strong> @item.RegisteredDate</p>
+
+                        <form asp-action="CancelMine" method="post" onsubmit="return confirm('Сигурен ли си, че искаш да отмениш тази резервация?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-danger">Откажи резервацията</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Все още нямаш резервации.</p>
+    }
+</div>

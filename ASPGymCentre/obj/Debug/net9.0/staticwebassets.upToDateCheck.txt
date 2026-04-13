@@ -1,3 +1,4 @@
+wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
@@ -60,8 +61,6 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\site.css
-C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\favicon.ico
 C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\js\site.js
 C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -122,4 +121,5 @@ C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\lib\jquery\dist\jquery.s
 C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\lib\jquery\dist\jquery.slim.min.js
 C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\lib\jquery\dist\jquery.slim.min.map
 C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\lib\jquery\LICENSE.txt
+C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\favicon.ico
 C:\Users\User\Desktop\ASPGymCentre\ASPGymCentre\wwwroot\css\site.css

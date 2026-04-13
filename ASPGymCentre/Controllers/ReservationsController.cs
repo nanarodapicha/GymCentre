@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ASPGymCentre.Data;
 using ASPGymCentre.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
 
 namespace ASPGymCentre.Controllers
 {
@@ -21,216 +20,280 @@ namespace ASPGymCentre.Controllers
         public ReservationsController(ApplicationDbContext context, UserManager<Client> userManager)
         {
             _context = context;
-            this._userManager = userManager;
+            _userManager = userManager;
         }
 
-        // GET: Reservations
+        // Само админ вижда всички резервации
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservations
+            var reservations = _context.Reservations
                 .Include(r => r.Clients)
-                .Include(r => r.Exercises);
+                .Include(r => r.Exercises)
+                    .ThenInclude(e => e.Plans)
+                .Include(r => r.Exercises)
+                    .ThenInclude(e => e.Instructors);
 
-            return View(await applicationDbContext.ToListAsync());
+            return View(await reservations.ToListAsync());
         }
 
-        // GET: Reservations/Details/5
+        // Страница за user: налични тренировки + неговите резервации
+        public async Task<IActionResult> MyReservations()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
+                return Challenge();
+
+            var exercises = await _context.Exercises
+                .Include(e => e.Plans)
+                .Include(e => e.Instructors)
+                .OrderBy(e => e.Day)
+                .ThenBy(e => e.StartTime)
+                .ToListAsync();
+
+            var myReservations = await _context.Reservations
+                .Where(r => r.ClientId == userId)
+                .Include(r => r.Exercises)
+                    .ThenInclude(e => e.Plans)
+                .Include(r => r.Exercises)
+                    .ThenInclude(e => e.Instructors)
+                .OrderByDescending(r => r.RegisteredDate)
+                .ToListAsync();
+
+            ViewBag.AvailableExercises = exercises;
+            return View(myReservations);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reserve(int exerciseId)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
+                return Challenge();
+
+            var exerciseExists = await _context.Exercises.AnyAsync(e => e.Id == exerciseId);
+            if (!exerciseExists)
+            {
+                TempData["ReservationError"] = "Невалидна тренировка.";
+                return RedirectToAction(nameof(MyReservations));
+            }
+
+            bool alreadyReserved = await _context.Reservations
+                .AnyAsync(r => r.ClientId == userId && r.ExerciseId == exerciseId);
+
+            if (alreadyReserved)
+            {
+                TempData["ReservationError"] = "Вече имате резервация за тази тренировка.";
+                return RedirectToAction(nameof(MyReservations));
+            }
+
+            var reservation = new Reservation
+            {
+                ClientId = userId,
+                ExerciseId = exerciseId,
+                RegisteredDate = DateTime.Now
+            };
+
+            _context.Reservations.Add(reservation);
+            await _context.SaveChangesAsync();
+
+            TempData["ReservationSuccess"] = "Резервацията беше създадена успешно.";
+            return RedirectToAction(nameof(MyReservations));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelMine(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
+                return Challenge();
+
+            var reservation = await _context.Reservations
+                .FirstOrDefaultAsync(r => r.Id == id && r.ClientId == userId);
+
+            if (reservation == null)
+            {
+                TempData["ReservationError"] = "Резервацията не беше намерена.";
+                return RedirectToAction(nameof(MyReservations));
+            }
+
+            _context.Reservations.Remove(reservation);
+            await _context.SaveChangesAsync();
+
+            TempData["ReservationSuccess"] = "Резервацията беше отказана успешно.";
+            return RedirectToAction(nameof(MyReservations));
+        }
+
+        // Само админ вижда детайли
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var reservation = await _context.Reservations
                 .Include(r => r.Clients)
                 .Include(r => r.Exercises)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                    .ThenInclude(e => e.Plans)
+                .Include(r => r.Exercises)
+                    .ThenInclude(e => e.Instructors)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (reservation == null)
-            {
-                return NotFound();
-            }
+            if (reservation == null) return NotFound();
 
             return View(reservation);
         }
 
-        // GET: Reservations/Create
+        // Оставяме Create, ако искаш и dropdown вариант
         public IActionResult Create()
         {
-            var clients = _context.Users
-                .Select(u => new
-                {
-                    Id = u.Id,
-                    Text = (u.Name ?? "") + " " + (u.FamilyName ?? "")
-                })
-                .ToList();
-
             var exercises = _context.Exercises
                 .Select(e => new
                 {
                     Id = e.Id,
                     Text = e.Day + " " + e.StartTime + " - " + e.EndTime
-                })
-                .ToList();
+                }).ToList();
 
-            ViewBag.ClientId = new SelectList(clients, "Id", "Text");
             ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text");
-
             return View();
         }
 
-        // POST: Reservations/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ExerciseId")] Reservation reservation)
         {
+            var userId = _userManager.GetUserId(User);
+
+            if (string.IsNullOrEmpty(userId))
+                return Challenge();
+
+            if (reservation.ExerciseId == 0)
+            {
+                ModelState.AddModelError("ExerciseId", "Моля, изберете тренировка.");
+            }
+
+            reservation.ClientId = userId;
             reservation.RegisteredDate = DateTime.Now;
-            reservation.ClientId = _userManager.GetUserId(User);
+
+            bool alreadyReserved = await _context.Reservations
+                .AnyAsync(r => r.ClientId == userId && r.ExerciseId == reservation.ExerciseId);
+
+            if (alreadyReserved)
+            {
+                ModelState.AddModelError("", "Вече имате резервация за тази тренировка.");
+            }
 
             if (ModelState.IsValid)
             {
-                _context.Reservations.Add(reservation);
+                _context.Add(reservation);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(MyReservations));
+            }
+
+            var exercises = _context.Exercises
+                .Select(e => new
+                {
+                    Id = e.Id,
+                    Text = e.Day + " " + e.StartTime + " - " + e.EndTime
+                }).ToList();
+
+            ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text", reservation.ExerciseId);
+
+            return View(reservation);
+        }
+
+        // Само админ редактира
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null) return NotFound();
+
+            var exercises = _context.Exercises
+                .Select(e => new
+                {
+                    Id = e.Id,
+                    Text = e.Day + " " + e.StartTime + " - " + e.EndTime
+                }).ToList();
+
+            ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text", reservation.ExerciseId);
+
+            return View(reservation);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ClientId,ExerciseId")] Reservation model)
+        {
+            if (id != model.Id) return NotFound();
+
+            if (model.ExerciseId == 0)
+            {
+                ModelState.AddModelError("ExerciseId", "Моля, изберете тренировка.");
+            }
+
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                reservation.ExerciseId = model.ExerciseId;
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["ClientId"] = new SelectList(_context.Users.ToList(), "Id", "FirstName", reservation.ClientId);
-            ViewData["ExerciseId"] = new SelectList(_context.Exercises.ToList(), "Id", "Day", reservation.ExerciseId);
-
-            return View(reservation);
-        }
-
-
-        // GET: Reservations/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-
-            var clients = _context.Users
-                .Select(u => new
-                {
-                    Id = u.Id,
-                    Text = (u.Name ?? "") + " " + (u.FamilyName ?? "")
-                })
-                .ToList();
-
             var exercises = _context.Exercises
                 .Select(e => new
                 {
                     Id = e.Id,
                     Text = e.Day + " " + e.StartTime + " - " + e.EndTime
-                })
-                .ToList();
+                }).ToList();
 
-            ViewBag.ClientId = new SelectList(clients, "Id", "Text", reservation.ClientId);
-            ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text", reservation.ExerciseId);
+            ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text", model.ExerciseId);
 
-            return View(reservation);
+            return View(model);
         }
 
-        // POST: Reservations/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ClientId,ExerciseId,")] Reservation reservation)
-        {
-            if (id != reservation.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(reservation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ReservationExists(reservation.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            var clients = _context.Users
-                .Select(u => new
-                {
-                    Id = u.Id,
-                    Text = (u.Name ?? "") + " " + (u.FamilyName ?? "")
-                })
-                .ToList();
-
-            var exercises = _context.Exercises
-                .Select(e => new
-                {
-                    Id = e.Id,
-                    Text = e.Day + " " + e.StartTime + " - " + e.EndTime
-                })
-                .ToList();
-
-            ViewBag.ClientId = new SelectList(clients, "Id", "Text", reservation.ClientId);
-            ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text", reservation.ExerciseId);
-
-            return View(reservation);
-        }
-
-        // GET: Reservations/Delete/5
+        // Само админ трие
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var reservation = await _context.Reservations
                 .Include(r => r.Clients)
                 .Include(r => r.Exercises)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                    .ThenInclude(e => e.Plans)
+                .Include(r => r.Exercises)
+                    .ThenInclude(e => e.Instructors)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (reservation == null)
-            {
-                return NotFound();
-            }
+            if (reservation == null) return NotFound();
 
             return View(reservation);
         }
 
-        // POST: Reservations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var reservation = await _context.Reservations.FindAsync(id);
+
             if (reservation != null)
             {
                 _context.Reservations.Remove(reservation);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ReservationExists(int id)
-        {
-            return _context.Reservations.Any(e => e.Id == id);
         }
     }
 }

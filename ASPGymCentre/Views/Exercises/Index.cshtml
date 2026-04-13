@@ -1,66 +1,62 @@
 ﻿@model IEnumerable<ASPGymCentre.Models.Exercise>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Тренировки";
 }
 
-<h1>Index</h1>
+<div class="section-title-row">
+    <h1>Тренировки</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Plans)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Day)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Instructors)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RegisteredDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">Създай нова тренировка</a>
+    }
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="card-grid">
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @item.Plans.Name
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Day)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndTime)
-                </td>
-                <td>
-                    @item.Instructors.Name
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RegisteredDate)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
+            <div class="custom-card">
+                <div class="custom-card-body">
+                    <div class="badge-soft">@item.Plans?.Name</div>
+
+                    <h3 class="custom-card-title">@item.Day</h3>
+
+                    <div class="custom-card-meta">
+                        <strong>Час:</strong> @item.StartTime - @item.EndTime
+                    </div>
+
+                    <div class="custom-card-meta">
+                        <strong>Инструктор:</strong> @item.Instructors?.Name
+                    </div>
+
+                    <div class="custom-card-meta">
+                        <strong>Добавена на:</strong> @item.RegisteredDate
+                    </div>
+
+                    <div class="custom-card-footer">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
+                        }
+
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm action-btn">Детайли</a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm action-btn">Изтрий</a>
+                        }
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+}
+else
+{
+    <div class="empty-box">
+        Няма добавени тренировки.
+    </div>
+}

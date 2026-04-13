@@ -1,54 +1,43 @@
-﻿    @model ASPGymCentre.Models.Plan
+﻿@model ASPGymCentre.Models.Plan
 
-    @{
-        ViewData["Title"] = "Details";
-    }
+@{
+    ViewData["Title"] = "Детайли";
+}
 
-    <h1>Details</h1>
+<h1>Детайли</h1>
 
-    <div>
-        <h4>Plan</h4>
-        <hr />
-        <dl class="row">
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Name)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Name)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.PlanCategoryID)
-            </dt>
-            <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PlansCategories.Name)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Description)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Description)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.Image)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Image)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.PriceSingleWorkout)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.PriceSingleWorkout)
-            </dd>
-            <dt class = "col-sm-2">
-                @Html.DisplayNameFor(model => model.RegisteredDate)
-            </dt>
-            <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.RegisteredDate)
-            </dd>
-        </dl>
+<div class="details-box">
+    <h4>План</h4>
+    <hr />
+
+    <div class="details-grid">
+        <div class="details-label">Име</div>
+        <div class="details-value">@Model.Name</div>
+
+        <div class="details-label">Категория</div>
+        <div class="details-value">@Model.PlansCategories?.Name</div>
+
+        <div class="details-label">Описание</div>
+        <div class="details-value">@Model.Description</div>
+
+        <div class="details-label">Снимка</div>
+        <div class="details-value">
+            <img src="@Model.Image" alt="Снимка на план" class="details-image" />
+        </div>
+
+        <div class="details-label">Цена за една тренировка</div>
+        <div class="details-value">@Model.PriceSingleWorkout</div>
+
+        <div class="details-label">Дата на регистрация</div>
+        <div class="details-value">@Model.RegisteredDate</div>
     </div>
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-        <a asp-action="Index">Back to List</a>
+
+    <div class="page-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
+        }
+
+        <a asp-action="Index" class="btn btn-secondary btn-sm page-btn">Обратно към списъка</a>
     </div>
+</div>

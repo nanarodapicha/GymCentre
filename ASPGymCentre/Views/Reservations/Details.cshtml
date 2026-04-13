@@ -1,38 +1,41 @@
 ﻿@model ASPGymCentre.Models.Reservation
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Детайли";
 }
 
-<h1>Details</h1>
+<h1>Детайли</h1>
 
-<div>
-    <h4>Reservation</h4>
+<div class="details-box">
+    <h4>Резервация</h4>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Клиент
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Clients.Name @Model.Clients.FamilyName
-        </dd>
 
-        <dt class="col-sm-2">
-            Тренировка
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Exercises.Day @Model.Exercises.StartTime - @Model.Exercises.EndTime
-        </dd>
+    <div class="details-grid">
+        <div class="details-label">Клиент</div>
+        <div class="details-value">@Model.Clients?.UserName</div>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.RegisteredDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.RegisteredDate)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        <div class="details-label">План</div>
+        <div class="details-value">@Model.Exercises?.Plans?.Name</div>
+
+        <div class="details-label">Ден</div>
+        <div class="details-value">@Model.Exercises?.Day</div>
+
+        <div class="details-label">Час</div>
+        <div class="details-value">@Model.Exercises?.StartTime - @Model.Exercises?.EndTime</div>
+
+        <div class="details-label">Инструктор</div>
+        <div class="details-value">@Model.Exercises?.Instructors?.Name</div>
+
+        <div class="details-label">Дата на регистрация</div>
+        <div class="details-value">@Model.RegisteredDate</div>
+    </div>
+
+    <div class="page-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
+        }
+
+        <a asp-action="Index" class="btn btn-secondary btn-sm page-btn">Обратно към списъка</a>
+    </div>
 </div>

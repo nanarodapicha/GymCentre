@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using ASPGymCentre.Data;
 using ASPGymCentre.Models;
 
@@ -18,17 +19,15 @@ namespace ASPGymCentre.Controllers
             _context = context;
         }
 
-        // GET: Exercises
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Exercises
+            var data = _context.Exercises
                 .Include(e => e.Instructors)
                 .Include(e => e.Plans);
 
-            return View(await applicationDbContext.ToListAsync());
+            return View(await data.ToListAsync());
         }
 
-        // GET: Exercises/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -49,7 +48,7 @@ namespace ASPGymCentre.Controllers
             return View(exercise);
         }
 
-        // GET: Exercises/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["InstructorId"] = new SelectList(_context.Instructors, "Id", "Name");
@@ -57,26 +56,51 @@ namespace ASPGymCentre.Controllers
             return View();
         }
 
-        // POST: Exercises/Create
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create([Bind("Id,PlanId,Day,StartTime,EndTime,InstructorId")] Exercise exercise)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(Exercise exercise)
+        {
+            if (exercise.PlanId == 0)
             {
-                exercise.RegisteredDate = DateTime.Now;
-
-                if (ModelState.IsValid)
-                {
-                    _context.Add(exercise);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-
-                ViewData["InstructorId"] = new SelectList(_context.Instructors, "Id", "Name", exercise.InstructorId);
-                ViewData["PlanId"] = new SelectList(_context.Plans, "Id", "Name", exercise.PlanId);
-                return View(exercise);
+                ModelState.AddModelError("PlanId", "Моля, изберете план.");
             }
 
-        // GET: Exercises/Edit/5
+            if (exercise.InstructorId == 0)
+            {
+                ModelState.AddModelError("InstructorId", "Моля, изберете инструктор.");
+            }
+
+            if (string.IsNullOrWhiteSpace(exercise.Day))
+            {
+                ModelState.AddModelError("Day", "Полето Ден е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(exercise.StartTime))
+            {
+                ModelState.AddModelError("StartTime", "Полето Начален час е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(exercise.EndTime))
+            {
+                ModelState.AddModelError("EndTime", "Полето Краен час е задължително.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                exercise.RegisteredDate = DateTime.Now;
+                _context.Exercises.Add(exercise);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewData["InstructorId"] = new SelectList(_context.Instructors, "Id", "Name", exercise.InstructorId);
+            ViewData["PlanId"] = new SelectList(_context.Plans, "Id", "Name", exercise.PlanId);
+
+            return View(exercise);
+        }
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -92,20 +116,49 @@ namespace ASPGymCentre.Controllers
 
             ViewData["InstructorId"] = new SelectList(_context.Instructors, "Id", "Name", exercise.InstructorId);
             ViewData["PlanId"] = new SelectList(_context.Plans, "Id", "Name", exercise.PlanId);
+
             return View(exercise);
         }
 
-        // POST: Exercises/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,PlanId,Day,StartTime,EndTime,InstructorId")] Exercise exercise)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, Exercise exercise)
         {
             if (id != exercise.Id)
             {
                 return NotFound();
             }
 
-            var existingExercise = await _context.Exercises.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
+            if (exercise.PlanId == 0)
+            {
+                ModelState.AddModelError("PlanId", "Моля, изберете план.");
+            }
+
+            if (exercise.InstructorId == 0)
+            {
+                ModelState.AddModelError("InstructorId", "Моля, изберете инструктор.");
+            }
+
+            if (string.IsNullOrWhiteSpace(exercise.Day))
+            {
+                ModelState.AddModelError("Day", "Полето Ден е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(exercise.StartTime))
+            {
+                ModelState.AddModelError("StartTime", "Полето Начален час е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(exercise.EndTime))
+            {
+                ModelState.AddModelError("EndTime", "Полето Краен час е задължително.");
+            }
+
+            var existingExercise = await _context.Exercises
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == id);
+
             if (existingExercise == null)
             {
                 return NotFound();
@@ -119,28 +172,26 @@ namespace ASPGymCentre.Controllers
                 {
                     _context.Update(exercise);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ExerciseExists(exercise.Id))
+                    if (!_context.Exercises.Any(e => e.Id == exercise.Id))
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
-                }
 
-                return RedirectToAction(nameof(Index));
+                    throw;
+                }
             }
 
             ViewData["InstructorId"] = new SelectList(_context.Instructors, "Id", "Name", exercise.InstructorId);
             ViewData["PlanId"] = new SelectList(_context.Plans, "Id", "Name", exercise.PlanId);
+
             return View(exercise);
         }
 
-        // GET: Exercises/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -151,7 +202,7 @@ namespace ASPGymCentre.Controllers
             var exercise = await _context.Exercises
                 .Include(e => e.Instructors)
                 .Include(e => e.Plans)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(e => e.Id == id);
 
             if (exercise == null)
             {
@@ -161,24 +212,20 @@ namespace ASPGymCentre.Controllers
             return View(exercise);
         }
 
-        // POST: Exercises/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var exercise = await _context.Exercises.FindAsync(id);
+
             if (exercise != null)
             {
                 _context.Exercises.Remove(exercise);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ExerciseExists(int id)
-        {
-            return _context.Exercises.Any(e => e.Id == id);
         }
     }
 }

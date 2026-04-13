@@ -35,20 +35,17 @@ namespace ASPGymCentre.Services
         }
         public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
-            //foreach (var role in Enum.GetValues(Roles))
-            //{
-            //                    var roleExist = await roleManager.RoleExistsAsync(role); 
-            //    if (!roleExist)
-            //    { }
-            //}
-           
-                //Seed Roles
+            if (!await roleManager.RoleExistsAsync("Admin"))
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
-                await roleManager.CreateAsync(new IdentityRole("User"));
-                await roleManager.CreateAsync(new IdentityRole("Guest"));
-            }
 
-            public static async Task SeedSuperAdminAsync(UserManager<Client> userManager)
+            if (!await roleManager.RoleExistsAsync("User"))
+                await roleManager.CreateAsync(new IdentityRole("User"));
+
+            if (!await roleManager.RoleExistsAsync("Guest"))
+                await roleManager.CreateAsync(new IdentityRole("Guest"));
+        }
+
+        public static async Task SeedSuperAdminAsync(UserManager<Client> userManager)
             {
                 //Seed Default User
                 var defaultUser = new Client

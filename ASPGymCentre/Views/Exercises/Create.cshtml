@@ -1,56 +1,65 @@
 ﻿@model ASPGymCentre.Models.Exercise
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Създаване";
 }
 
-<h1>Create</h1>
+<h1>Създаване</h1>
 
-<h4>Exercise</h4>
+<h4>Тренировка</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="PlanId" class="control-label"></label>
-                <select asp-for="PlanId" class="form-control" asp-items="ViewBag.PlanID"></select>
+
+            <div class="form-group mb-3">
+                <label asp-for="PlanId" class="control-label">План</label>
+                <select asp-for="PlanId" class="form-control" asp-items="ViewBag.PlanId">
+                    <option value="0">-- Избери план --</option>
+                </select>
+                <span asp-validation-for="PlanId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Day" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="Day" class="control-label">Ден</label>
                 <input asp-for="Day" class="form-control" />
                 <span asp-validation-for="Day" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="StartTime" class="control-label">Начален час</label>
                 <input asp-for="StartTime" class="form-control" />
                 <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="EndTime" class="control-label">Краен час</label>
                 <input asp-for="EndTime" class="form-control" />
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="InstructorId" class="control-label"></label>
-                <select asp-for="InstructorId" class="form-control" asp-items="ViewBag.InstructorID"></select>
+
+            <div class="form-group mb-3">
+                <label asp-for="InstructorId" class="control-label">Инструктор</label>
+                <select asp-for="InstructorId" class="form-control" asp-items="ViewBag.InstructorId">
+                    <option value="0">-- Избери инструктор --</option>
+                </select>
+                <span asp-validation-for="InstructorId" class="text-danger"></span>
             </div>
-           @*  <div class="form-group">
-                <label asp-for="RegisteredDate" class="control-label"></label>
-                <input asp-for="RegisteredDate" class="form-control" readonly />
-                <span asp-validation-for="RegisteredDate" class="text-danger"></span>
-            </div> *@
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Създай нова тренировка" class="btn btn-primary mb-3" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="mt-3">
+    <a asp-action="Index">Обратно към списъка</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

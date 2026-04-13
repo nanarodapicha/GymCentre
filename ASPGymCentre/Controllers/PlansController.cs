@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using ASPGymCentre.Data;
 using ASPGymCentre.Models;
 
@@ -18,7 +19,6 @@ namespace ASPGymCentre.Controllers
             _context = context;
         }
 
-        // GET: Plans
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Plans
@@ -27,7 +27,6 @@ namespace ASPGymCentre.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Plans/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,22 +46,46 @@ namespace ASPGymCentre.Controllers
             return View(plan);
         }
 
-        // GET: Plans/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["PlanCategoryID"] = new SelectList(_context.PlanCategory, "Id", "Name");
             return View();
         }
 
-        // POST: Plans/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Name,PlanCategoryID,Description,Image,PriceSingleWorkout")] Plan plan)
         {
+            if (plan.PlanCategoryID == 0)
+            {
+                ModelState.AddModelError("PlanCategoryID", "Моля, изберете категория.");
+            }
+
+            if (string.IsNullOrWhiteSpace(plan.Name))
+            {
+                ModelState.AddModelError("Name", "Полето Име е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(plan.Description))
+            {
+                ModelState.AddModelError("Description", "Полето Описание е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(plan.Image))
+            {
+                ModelState.AddModelError("Image", "Полето Снимка е задължително.");
+            }
+
+            if (plan.PriceSingleWorkout <= 0)
+            {
+                ModelState.AddModelError("PriceSingleWorkout", "Полето Цена за една тренировка е задължително.");
+            }
+
             if (ModelState.IsValid)
             {
                 plan.RegisteredDate = DateTime.Now;
-
                 _context.Add(plan);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -72,7 +95,7 @@ namespace ASPGymCentre.Controllers
             return View(plan);
         }
 
-        // GET: Plans/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -90,14 +113,39 @@ namespace ASPGymCentre.Controllers
             return View(plan);
         }
 
-        // POST: Plans/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,PlanCategoryID,Description,Image,PriceSingleWorkout")] Plan plan)
         {
             if (id != plan.Id)
             {
                 return NotFound();
+            }
+
+            if (plan.PlanCategoryID == 0)
+            {
+                ModelState.AddModelError("PlanCategoryID", "Моля, изберете категория.");
+            }
+
+            if (string.IsNullOrWhiteSpace(plan.Name))
+            {
+                ModelState.AddModelError("Name", "Полето Име е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(plan.Description))
+            {
+                ModelState.AddModelError("Description", "Полето Описание е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(plan.Image))
+            {
+                ModelState.AddModelError("Image", "Полето Снимка е задължително.");
+            }
+
+            if (plan.PriceSingleWorkout <= 0)
+            {
+                ModelState.AddModelError("PriceSingleWorkout", "Полето Цена за една тренировка е задължително.");
             }
 
             var existingPlan = await _context.Plans
@@ -137,7 +185,7 @@ namespace ASPGymCentre.Controllers
             return View(plan);
         }
 
-        // GET: Plans/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -157,18 +205,19 @@ namespace ASPGymCentre.Controllers
             return View(plan);
         }
 
-        // POST: Plans/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var plan = await _context.Plans.FindAsync(id);
+
             if (plan != null)
             {
                 _context.Plans.Remove(plan);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

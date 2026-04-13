@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ASPGymCentre")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+13ad9f55e70ac7e44a97c5050dbc8b6abe3a0778")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9306c06ed96e06fa2c1601404c73ed77006466fb")]
 [assembly: System.Reflection.AssemblyProductAttribute("ASPGymCentre")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ASPGymCentre")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,47 +1,55 @@
 ﻿@model IEnumerable<ASPGymCentre.Models.Reservation>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Резервации";
 }
 
-<h1>Index</h1>
+<h1>Резервации</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Clients)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Exercises)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RegisteredDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                    @item.Clients.Name @item.Clients.FamilyName
-            </td>
-            <td>
-                    @item.Exercises.Day @item.Exercises.StartTime - @item.Exercises.EndTime
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegisteredDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Създай нова резервация</a>
+    </p>
 }
-    </tbody>
-</table>
+
+<div class="table-responsive">
+    <table class="table table-custom align-middle">
+        <thead>
+            <tr>
+                <th>Клиент</th>
+                <th>Тренировка</th>
+                <th>Дата на регистрация</th>
+                <th class="text-center">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Clients?.UserName</td>
+                    <td>
+                        @item.Exercises?.Day
+                        @item.Exercises?.StartTime - @item.Exercises?.EndTime
+                    </td>
+                    <td>@item.RegisteredDate</td>
+                    <td>
+                        <div class="action-buttons">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
+                            }
+
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm action-btn">Детайли</a>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm action-btn">Изтрий</a>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

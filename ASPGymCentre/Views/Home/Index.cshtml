@@ -2,49 +2,130 @@
     ViewData["Title"] = "Начало";
 }
 
-<section class="hero-section text-center">
-    <div class="hero-overlay">
-        <h1 class="display-3 fw-bold">ASPGymCentre</h1>
-        <p class="lead mt-3">
-            Система за управление на планове, тренировки, инструктори, клиенти и резервации.
-        </p>
-        <div class="mt-4">
-            <a class="btn btn-danger btn-lg me-2" asp-controller="Plans" asp-action="Index">Виж плановете</a>
-            <a class="btn btn-outline-light btn-lg" asp-controller="Exercises" asp-action="Index">Виж тренировките</a>
+<section class="home-hero">
+    <div class="home-hero-overlay">
+        <div class="home-hero-content">
+            <span class="hero-badge">Добре дошъл в Фитнес център „Желязна сила“</span>
+
+            <h1 class="home-hero-title">Фитнес център „Желязна сила“</h1>
+
+            <p class="home-hero-subtitle">
+                Открий подходящите планове, разгледай тренировките, запознай се с инструкторите
+                и резервирай своята следваща тренировка лесно и бързо.
+            </p>
+
+            <div class="home-hero-actions">
+                <a class="btn btn-primary btn-lg" asp-controller="Plans" asp-action="Index">
+                    Виж плановете
+                </a>
+
+                <a class="btn btn-outline-light btn-lg" asp-controller="Exercises" asp-action="Index">
+                    Виж тренировките
+                </a>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="container mt-5">
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card custom-card h-100 text-center">
-                <div class="card-body">
-                    <h3 class="card-title">Планове</h3>
-                    <p class="card-text">Разгледай всички тренировъчни планове и категории.</p>
-                    <a asp-controller="Plans" asp-action="Index" class="btn btn-danger">Отвори</a>
+<section class="home-features-section">
+    <div class="section-title-row">
+        <h2>Какво можеш да направиш</h2>
+    </div>
+
+    <div class="card-grid">
+        <div class="custom-card home-card">
+            <div class="custom-card-body text-center">
+                <div class="home-card-icon">🏋️</div>
+                <h3 class="custom-card-title">Планове</h3>
+                <p class="custom-card-text">
+                    Разгледай всички тренировъчни планове и намери този, който най-добре подхожда на целите ти.
+                </p>
+                <div class="custom-card-footer justify-content-center">
+                    <a asp-controller="Plans" asp-action="Index" class="btn btn-primary">
+                        Отвори
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card custom-card h-100 text-center">
-                <div class="card-body">
-                    <h3 class="card-title">Инструктори</h3>
-                    <p class="card-text">Виж информация за всички инструктори в залата.</p>
-                    <a asp-controller="Instructors" asp-action="Index" class="btn btn-danger">Отвори</a>
+        <div class="custom-card home-card">
+            <div class="custom-card-body text-center">
+                <div class="home-card-icon">📅</div>
+                <h3 class="custom-card-title">Тренировки</h3>
+                <p class="custom-card-text">
+                    Виж наличните тренировки по дни и часове и избери удобен за теб вариант.
+                </p>
+                <div class="custom-card-footer justify-content-center">
+                    <a asp-controller="Exercises" asp-action="Index" class="btn btn-primary">
+                        Отвори
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card custom-card h-100 text-center">
-                <div class="card-body">
-                    <h3 class="card-title">Резервации</h3>
-                    <p class="card-text">Управлявай клиентски записвания за тренировки.</p>
-                    <a asp-controller="Reservations" asp-action="Index" class="btn btn-danger">Отвори</a>
+        <div class="custom-card home-card">
+            <div class="custom-card-body text-center">
+                <div class="home-card-icon">👨‍🏫</div>
+                <h3 class="custom-card-title">Инструктори</h3>
+                <p class="custom-card-text">
+                    Запознай се с инструкторите в залата и избери тренировки с предпочитан от теб инструктор.
+                </p>
+                <div class="custom-card-footer justify-content-center">
+                    <a asp-controller="Instructors" asp-action="Index" class="btn btn-primary">
+                        Отвори
+                    </a>
                 </div>
             </div>
         </div>
+
+        <div class="custom-card home-card">
+            <div class="custom-card-body text-center">
+                <div class="home-card-icon">✅</div>
+                <h3 class="custom-card-title">Резервации</h3>
+                <p class="custom-card-text">
+                    Създавай резервации за тренировки и следи своите записвания на едно място.
+                </p>
+                <div class="custom-card-footer justify-content-center">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="Reservations" asp-action="Index" class="btn btn-primary">
+                                Отвори
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Reservations" asp-action="MyReservations" class="btn btn-primary">
+                                Моите резервации
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">
+                            Влез в профила си
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="home-info-strip">
+    <div class="home-info-box">
+        <h2>Защо да избереш нас?</h2>
+        <p>
+            Предлагаме разнообразни планове, удобни часове за тренировки и инструктори,
+            които ще ти помогнат да постигнеш целите си.
+        </p>
+    </div>
+
+    <div class="home-info-box">
+        <h2>Готов ли си да започнеш?</h2>
+        <p>
+            Разгледай тренировките и направи своята първа резервация още днес.
+        </p>
     </div>
 </section>

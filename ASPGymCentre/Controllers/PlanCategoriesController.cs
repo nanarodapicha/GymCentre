@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ASPGymCentre.Data;
 using ASPGymCentre.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ASPGymCentre.Controllers
 {
@@ -19,13 +18,11 @@ namespace ASPGymCentre.Controllers
             _context = context;
         }
 
-        // GET: PlanCategories
         public async Task<IActionResult> Index()
         {
             return View(await _context.PlanCategory.ToListAsync());
         }
 
-        // GET: PlanCategories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -35,6 +32,7 @@ namespace ASPGymCentre.Controllers
 
             var planCategory = await _context.PlanCategory
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (planCategory == null)
             {
                 return NotFound();
@@ -43,29 +41,38 @@ namespace ASPGymCentre.Controllers
             return View(planCategory);
         }
 
-        // GET: PlanCategories/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: PlanCategories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Name,Description")] PlanCategory planCategory)
         {
+            if (string.IsNullOrWhiteSpace(planCategory.Name))
+            {
+                ModelState.AddModelError("Name", "Полето Име е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(planCategory.Description))
+            {
+                ModelState.AddModelError("Description", "Полето Описание е задължително.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(planCategory);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(planCategory);
         }
 
-        // GET: PlanCategories/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,19 +85,28 @@ namespace ASPGymCentre.Controllers
             {
                 return NotFound();
             }
+
             return View(planCategory);
         }
 
-        // POST: PlanCategories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] PlanCategory planCategory)
         {
             if (id != planCategory.Id)
             {
                 return NotFound();
+            }
+
+            if (string.IsNullOrWhiteSpace(planCategory.Name))
+            {
+                ModelState.AddModelError("Name", "Полето Име е задължително.");
+            }
+
+            if (string.IsNullOrWhiteSpace(planCategory.Description))
+            {
+                ModelState.AddModelError("Description", "Полето Описание е задължително.");
             }
 
             if (ModelState.IsValid)
@@ -111,12 +127,14 @@ namespace ASPGymCentre.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(planCategory);
         }
 
-        // GET: PlanCategories/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -126,6 +144,7 @@ namespace ASPGymCentre.Controllers
 
             var planCategory = await _context.PlanCategory
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (planCategory == null)
             {
                 return NotFound();
@@ -134,18 +153,19 @@ namespace ASPGymCentre.Controllers
             return View(planCategory);
         }
 
-        // POST: PlanCategories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var planCategory = await _context.PlanCategory.FindAsync(id);
+
             if (planCategory != null)
             {
                 _context.PlanCategory.Remove(planCategory);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

@@ -1,66 +1,62 @@
 ﻿@model IEnumerable<ASPGymCentre.Models.Plan>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Планове";
 }
 
-<h1>Index</h1>
+<div class="section-title-row">
+    <h1>Планове</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PlanCategoryID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Image)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PriceSingleWorkout)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RegisteredDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.PlansCategories.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                    <img src=" @Html.DisplayFor(modelItem => item.Image)" height=" 50" width="50">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">Създай нов план</a>
+    }
+</div>
 
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PriceSingleWorkout)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegisteredDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@if (Model != null && Model.Any())
+{
+    <div class="card-grid">
+        @foreach (var item in Model)
+        {
+            <div class="custom-card">
+                <img src="@item.Image" alt="Снимка на план" class="custom-card-img" />
+
+                <div class="custom-card-body">
+                    <div class="badge-soft">@item.PlansCategories?.Name</div>
+
+                    <h3 class="custom-card-title">@item.Name</h3>
+
+                    <p class="custom-card-text">@item.Description</p>
+
+                    <div class="custom-card-meta">
+                        <strong>Цена:</strong> @item.PriceSingleWorkout лв.
+                    </div>
+
+                    <div class="custom-card-meta">
+                        <strong>Добавен на:</strong> @item.RegisteredDate
+                    </div>
+
+                    <div class="custom-card-footer">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
+                        }
+
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm action-btn">Детайли</a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm action-btn">Изтрий</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="empty-box">
+        Няма добавени планове.
+    </div>
+}

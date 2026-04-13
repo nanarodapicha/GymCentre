@@ -1,59 +1,40 @@
 ﻿@model ASPGymCentre.Models.Exercise
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Изтриване";
 }
 
-<h1>Edit</h1>
+<h1>Изтриване</h1>
 
-<h4>Exercise</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="PlanId" class="control-label"></label>
-                <select asp-for="PlanId" class="form-control" asp-items="ViewBag.PlanId"></select>
-                <span asp-validation-for="PlanId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Day" class="control-label"></label>
-                <input asp-for="Day" class="form-control" />
-                <span asp-validation-for="Day" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InstructorId" class="control-label"></label>
-                <select asp-for="InstructorId" class="form-control" asp-items="ViewBag.InstructorId"></select>
-                <span asp-validation-for="InstructorId" class="text-danger"></span>
-            </div>
-          @*   <div class="form-group">
-                <label asp-for="RegisteredDate" class="control-label"></label>
-                <input asp-for="RegisteredDate" class="form-control" />
-                <span asp-validation-for="RegisteredDate" class="text-danger"></span>
-            </div> *@
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="details-box">
+    <h3>Сигурни ли сте, че искате да изтриете това?</h3>
+
+    <h4>Тренировка</h4>
+    <hr />
+
+    <div class="details-grid">
+        <div class="details-label">План</div>
+        <div class="details-value">@Model.Plans?.Name</div>
+
+        <div class="details-label">Ден</div>
+        <div class="details-value">@Model.Day</div>
+
+        <div class="details-label">Начален час</div>
+        <div class="details-value">@Model.StartTime</div>
+
+        <div class="details-label">Краен час</div>
+        <div class="details-value">@Model.EndTime</div>
+
+        <div class="details-label">Инструктор</div>
+        <div class="details-value">@Model.Instructors?.Name</div>
+
+        <div class="details-label">Дата на регистрация</div>
+        <div class="details-value">@Model.RegisteredDate</div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <form asp-action="Delete" method="post" class="page-actions">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Изтрий" class="btn btn-danger btn-sm action-btn" />
+        <a asp-action="Index" class="btn btn-secondary btn-sm page-btn">Обратно към списъка</a>
+    </form>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

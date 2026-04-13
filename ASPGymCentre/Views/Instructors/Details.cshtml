@@ -1,48 +1,40 @@
 ﻿@model ASPGymCentre.Models.Instructor
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Детайли";
 }
 
-<h1>Details</h1>
+<h1>Детайли</h1>
 
-<div>
-    <h4>Instructor</h4>
+<div class="details-box">
+    <h4>Инструктор</h4>
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Image)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Image)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RegisteredDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RegisteredDate)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+    <div class="details-grid">
+        <div class="details-label">Име</div>
+        <div class="details-value">@Model.Name</div>
+
+        <div class="details-label">Описание</div>
+        <div class="details-value">@Model.Description</div>
+
+        <div class="details-label">Снимка</div>
+        <div class="details-value">
+            <img src="@Model.Image" alt="Снимка на инструктор" class="details-image" />
+        </div>
+
+        <div class="details-label">Телефонен номер</div>
+        <div class="details-value">@Model.PhoneNumber</div>
+
+        <div class="details-label">Дата на регистрация</div>
+        <div class="details-value">@Model.RegisteredDate</div>
+    </div>
+
+    <div class="page-actions">
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
+        }
+
+        <a asp-action="Index" class="btn btn-secondary btn-sm page-btn">Обратно към списъка</a>
+    </div>
 </div>

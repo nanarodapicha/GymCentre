@@ -1,63 +1,60 @@
 ﻿@model IEnumerable<ASPGymCentre.Models.Instructor>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Инструктори";
 }
 
-<h1>Index</h1>
+<div class="section-title-row">
+    <h1>Инструктори</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">Създай нов инструктор</a>
+    }
+</div>
 
-                @Html.DisplayNameFor(model => model.Image)
-              
-               
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RegisteredDate)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
+@if (Model != null && Model.Any())
+{
+    <div class="card-grid">
+        @foreach (var item in Model)
+        {
+            <div class="custom-card">
+                <img src="@item.Image" alt="Снимка на инструктор" class="custom-card-img" />
 
-                    <img src=" @Html.DisplayFor(modelItem => item.Image)" width="50">
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegisteredDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+                <div class="custom-card-body">
+                    <h3 class="custom-card-title">@item.Name</h3>
+
+                    <p class="custom-card-text">@item.Description</p>
+
+                    <div class="custom-card-meta">
+                        <strong>Телефон:</strong> @item.PhoneNumber
+                    </div>
+
+                    <div class="custom-card-meta">
+                        <strong>Добавен на:</strong> @item.RegisteredDate
+                    </div>
+
+                    <div class="custom-card-footer">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
+                        }
+
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm action-btn">Детайли</a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm action-btn">Изтрий</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="empty-box">
+        Няма добавени инструктори.
+    </div>
+}

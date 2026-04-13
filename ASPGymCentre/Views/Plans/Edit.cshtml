@@ -1,60 +1,65 @@
 ﻿@model ASPGymCentre.Models.Plan
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактиране";
 }
 
-<h1>Edit</h1>
+<h1>Редактиране</h1>
 
-<h4>Plan</h4>
+<h4>План</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="PlanCategoryID" class="control-label"></label>
-                <select asp-for="PlanCategoryID" class="form-control" asp-items="ViewBag.PlanCategoryID"></select>
-                <span asp-validation-for="PlanCategoryID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PriceSingleWorkout" class="control-label"></label>
-                <input asp-for="PriceSingleWorkout" class="form-control" />
-                <span asp-validation-for="PriceSingleWorkout" class="text-danger"></span>
-            </div>
-            @* <div class="form-group">
-                <label asp-for="RegisteredDate" class="control-label"></label>
-                <input asp-for="RegisteredDate" class="form-control" />
-                <span asp-validation-for="RegisteredDate" class="text-danger"></span>
-            </div> *@
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+
+<div class="form-page-box">
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="form-group mb-3">
+                    <label asp-for="Name" class="control-label">Име</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="PlanCategoryID" class="control-label">Категория</label>
+                    <select asp-for="PlanCategoryID" class="form-control" asp-items="ViewBag.PlanCategoryID">
+                        <option value="0">-- Избери категория --</option>
+                    </select>
+                    <span asp-validation-for="PlanCategoryID" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="control-label">Описание</label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Image" class="control-label">Снимка (линк)</label>
+                    <input asp-for="Image" class="form-control" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="PriceSingleWorkout" class="control-label">Цена за една тренировка</label>
+                    <input asp-for="PriceSingleWorkout" class="form-control" />
+                    <span asp-validation-for="PriceSingleWorkout" class="text-danger"></span>
+                </div>
+
+                <div class="page-actions">
+                    <input type="submit" value="Запази" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary page-btn">Обратно към списъка</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
