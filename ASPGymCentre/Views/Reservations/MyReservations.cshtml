@@ -3,10 +3,16 @@
 
 @{
     ViewData["Title"] = "Моите резервации";
-    var availableExercises = ViewBag.AvailableExercises as List<Exercise> ?? new List<Exercise>();
+    var availableExercises = ViewBag.AvailableExercises as List<Exercise>
+        ?? new List<Exercise>();
 }
 
-<h1>Моите резервации</h1>
+<div class="section-title-row">
+
+    <h1>Моите резервации</h1>
+
+</div>
+
 
 @if (TempData["ReservationSuccess"] != null)
 {
@@ -15,6 +21,7 @@
     </div>
 }
 
+
 @if (TempData["ReservationError"] != null)
 {
     <div class="alert alert-danger">
@@ -22,78 +29,285 @@
     </div>
 }
 
-<div class="reservation-section">
-    <h2>Тренировки, които може да резервираш</h2>
 
-    @if (availableExercises.Any())
-    {
-        <div class="card-grid">
-            @foreach (var exercise in availableExercises)
-            {
-                var alreadyReserved = Model.Any(r => r.ExerciseId == exercise.Id);
 
-                <div class="custom-card">
-                    <div class="custom-card-body">
-                        <h4>@exercise.Plans?.Name</h4>
+<div class="info-page-box mb-4">
 
-                        <p><strong>Ден:</strong> @exercise.Day</p>
-                        <p><strong>Час:</strong> @exercise.StartTime - @exercise.EndTime</p>
-                        <p><strong>Инструктор:</strong> @exercise.Instructors?.Name</p>
+    <form method="get">
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+
+                <select name="planId"
+                        class="form-control"
+                        asp-items="ViewBag.PlanId">
+
+                    <option value="">
+                        Всички планове
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <select name="searchDay"
+                        class="form-control"
+                        asp-items="ViewBag.Days">
+
+                    <option value="">
+                        Всички дни
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <select name="instructorId"
+                        class="form-control"
+                        asp-items="ViewBag.InstructorId">
+
+                    <option value="">
+                        Всички инструктори
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div class="page-actions mt-3">
+
+            <button class="btn btn-primary">
+                Филтрирай
+            </button>
+
+
+            <a asp-action="MyReservations"
+               class="btn btn-secondary">
+
+                Изчисти
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+
+<h2 class="mb-4">Свободни тренировки</h2>
+
+
+@if (availableExercises.Any())
+{
+    <div class="card-grid">
+
+        @foreach (var exercise in availableExercises)
+        {
+            var alreadyReserved =
+            Model.Any(x => x.ExerciseId == exercise.Id);
+
+            var reservedCount =
+            exercise.Reservations?.Count ?? 0;
+
+            var freeSpots =
+            15 - reservedCount;
+
+
+            <div class="custom-card">
+
+                <img src="@($"/images/{exercise.Plans.Image}")"
+                     class="custom-card-img">
+
+
+                <div class="custom-card-body">
+
+                    <div class="badge-soft">
+                        @exercise.Plans?.Name
+                    </div>
+
+
+                    <h3 class="custom-card-title">
+                        @exercise.Day
+                    </h3>
+
+
+                    <div class="custom-card-meta">
+                        <strong>Час:</strong>
+                        @exercise.StartTime - @exercise.EndTime
+                    </div>
+
+
+                    <div class="custom-card-meta">
+                        <strong>Инструктор:</strong>
+                        @exercise.Instructors?.Name
+                    </div>
+
+
+                    <div class="custom-card-meta">
+                        <strong>Цена:</strong>
+                        @exercise.Plans?.PriceSingleWorkout €
+                    </div>
+
+
+                    <div class="custom-card-meta">
+                        <strong>Свободни места:</strong>
+                        @freeSpots / 15
+                    </div>
+
+
+                    <div class="custom-card-footer">
 
                         @if (alreadyReserved)
                         {
-                            <span class="badge bg-success">Вече е резервирана</span>
+                            <button class="btn btn-success btn-sm"
+                                    disabled>
+
+                                Резервирана
+
+                            </button>
+                        }
+                        else if (freeSpots <= 0)
+                        {
+                            <button class="btn btn-danger btn-sm"
+                                    disabled>
+
+                                Запълнена
+
+                            </button>
                         }
                         else
                         {
-                            <form asp-action="Reserve" method="post">
+                            <form asp-action="Reserve"
+                                  method="post">
+
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="exerciseId" value="@exercise.Id" />
-                                <button type="submit" class="btn btn-primary">Резервирай</button>
+
+                                <input type="hidden"
+                                       name="exerciseId"
+                                       value="@exercise.Id" />
+
+
+                                <button class="btn btn-primary btn-sm">
+
+                                    Резервирай
+
+                                </button>
+
                             </form>
                         }
+
                     </div>
+
                 </div>
-            }
-        </div>
-    }
-    else
-    {
-        <p>Няма налични тренировки.</p>
-    }
-</div>
 
-<hr />
+            </div>
+        }
 
-<div class="reservation-section">
-    <h2>Моите резервации</h2>
+    </div>
+}
+else
+{
+    <div class="empty-box">
+        Няма тренировки по зададените критерии.
+    </div>
+}
 
-    @if (Model.Any())
-    {
-        <div class="card-grid">
-            @foreach (var item in Model)
-            {
-                <div class="custom-card reserved-card">
-                    <div class="custom-card-body">
-                        <h4>@item.Exercises?.Plans?.Name</h4>
 
-                        <p><strong>Ден:</strong> @item.Exercises?.Day</p>
-                        <p><strong>Час:</strong> @item.Exercises?.StartTime - @item.Exercises?.EndTime</p>
-                        <p><strong>Инструктор:</strong> @item.Exercises?.Instructors?.Name</p>
-                        <p><strong>Създадена на:</strong> @item.RegisteredDate</p>
 
-                        <form asp-action="CancelMine" method="post" onsubmit="return confirm('Сигурен ли си, че искаш да отмениш тази резервация?');">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <button type="submit" class="btn btn-danger">Откажи резервацията</button>
-                        </form>
+<hr class="my-5" />
+
+
+<h2 class="mb-4">Активни резервации</h2>
+
+
+@if (Model.Any())
+{
+    <div class="card-grid">
+
+        @foreach (var item in Model)
+        {
+            <div class="custom-card">
+
+                <img src="@($"/images/{item.Exercises.Plans.Image}")"
+                     class="custom-card-img">
+
+
+                <div class="custom-card-body">
+
+                    <div class="badge-soft">
+                        @item.Exercises?.Plans?.Name
                     </div>
+
+
+                    <h3 class="custom-card-title">
+                        @item.Exercises?.Day
+                    </h3>
+
+
+                    <div class="custom-card-meta">
+                        <strong>Час:</strong>
+                        @item.Exercises?.StartTime - @item.Exercises?.EndTime
+                    </div>
+
+
+                    <div class="custom-card-meta">
+                        <strong>Инструктор:</strong>
+                        @item.Exercises?.Instructors?.Name
+                    </div>
+
+
+                    <div class="custom-card-meta">
+                        <strong>Цена:</strong>
+                        @item.Exercises?.Plans?.PriceSingleWorkout €
+                    </div>
+
+
+                    <div class="custom-card-meta">
+                        <strong>Резервирана на:</strong>
+                        @item.RegisteredDate.ToShortDateString()
+                    </div>
+
+
+                    <form asp-action="CancelMine"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="id"
+                               value="@item.Id" />
+
+
+                        <button class="btn btn-danger btn-sm">
+
+                            Откажи
+
+                        </button>
+
+                    </form>
+
                 </div>
-            }
-        </div>
-    }
-    else
-    {
-        <p>Все още нямаш резервации.</p>
-    }
-</div>
+
+            </div>
+        }
+
+    </div>
+}
+else
+{
+    <div class="empty-box">
+        Нямаш активни резервации.
+    </div>
+}

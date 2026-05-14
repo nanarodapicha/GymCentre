@@ -19,12 +19,69 @@ namespace ASPGymCentre.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+          string searchText,
+          int? categoryId,
+          string sortOrder)
         {
-            var applicationDbContext = _context.Plans
-                .Include(p => p.PlansCategories);
+            var query = _context.Plans
+                .Include(x => x.PlansCategories)
+                .AsQueryable();
 
-            return View(await applicationDbContext.ToListAsync());
+
+            // Търсене
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                query = query.Where(x =>
+                    x.Name.Contains(searchText));
+            }
+
+
+            // Категория
+            if (categoryId.HasValue)
+            {
+                query = query.Where(x =>
+                    x.PlanCategoryID == categoryId.Value);
+            }
+
+
+            // Подреждане
+            switch (sortOrder)
+            {
+                case "priceAsc":
+                    query = query.OrderBy(x =>
+                        x.PriceSingleWorkout);
+                    break;
+
+                case "priceDesc":
+                    query = query.OrderByDescending(x =>
+                        x.PriceSingleWorkout);
+                    break;
+
+                case "newest":
+                    query = query.OrderByDescending(x =>
+                        x.RegisteredDate);
+                    break;
+
+                default:
+                    query = query.OrderBy(x =>
+                        x.Name);
+                    break;
+            }
+
+
+            // Dropdown категории
+            ViewBag.CategoryId =
+                new SelectList(
+                    await _context.PlanCategory
+                        .OrderBy(x => x.Name)
+                        .ToListAsync(),
+                    "Id",
+                    "Name");
+
+
+            return View(
+                await query.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)

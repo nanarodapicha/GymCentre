@@ -4,40 +4,65 @@
     ViewData["Title"] = "Детайли";
 }
 
-<h1>Детайли</h1>
+<div class="details-wrapper">
 
-<div class="details-box">
-    <h4>План</h4>
-    <hr />
+    <div class="custom-card details-premium-card">
 
-    <div class="details-grid">
-        <div class="details-label">Име</div>
-        <div class="details-value">@Model.Name</div>
+        <img src="@($"/images/{Model.Image}")"
+             class="custom-card-img">
 
-        <div class="details-label">Категория</div>
-        <div class="details-value">@Model.PlansCategories?.Name</div>
 
-        <div class="details-label">Описание</div>
-        <div class="details-value">@Model.Description</div>
+        <div class="custom-card-body">
 
-        <div class="details-label">Снимка</div>
-        <div class="details-value">
-            <img src="@Model.Image" alt="Снимка на план" class="details-image" />
+            <div class="badge-soft">
+                @Model.PlansCategories?.Name
+            </div>
+
+
+            <h2 class="custom-card-title mt-3">
+                @Model.Name
+            </h2>
+
+
+            <p class="custom-card-text">
+                @Model.Description
+            </p>
+
+
+            <div class="details-price">
+                @Model.PriceSingleWorkout.ToString("0.00") €.
+            </div>
+
+
+            <div class="custom-card-meta">
+                <strong>Добавен на:</strong>
+                @Model.RegisteredDate.ToShortDateString()
+            </div>
+
+
+            <div class="custom-card-footer mt-4">
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit"
+                       asp-route-id="@Model.Id"
+                       class="btn btn-primary btn-sm action-btn">
+
+                        Редактирай
+                    </a>
+                }
+
+
+                <a asp-action="Index"
+                   class="btn btn-secondary btn-sm action-btn">
+
+                    Назад
+                </a>
+
+            </div>
+
         </div>
 
-        <div class="details-label">Цена за една тренировка</div>
-        <div class="details-value">@Model.PriceSingleWorkout</div>
-
-        <div class="details-label">Дата на регистрация</div>
-        <div class="details-value">@Model.RegisteredDate</div>
     </div>
 
-    <div class="page-actions">
-        @if (User.IsInRole("Admin"))
-        {
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
-        }
-
-        <a asp-action="Index" class="btn btn-secondary btn-sm page-btn">Обратно към списъка</a>
-    </div>
 </div>

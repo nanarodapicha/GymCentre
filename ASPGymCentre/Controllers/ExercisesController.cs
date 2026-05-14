@@ -19,13 +19,40 @@ namespace ASPGymCentre.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? planId, string searchDay, int? instructorId)
         {
-            var data = _context.Exercises
+            var query = _context.Exercises
                 .Include(e => e.Instructors)
-                .Include(e => e.Plans);
+                .Include(e => e.Plans)
+                .AsQueryable();
 
-            return View(await data.ToListAsync());
+            if (planId.HasValue && planId.Value > 0)
+            {
+                query = query.Where(e => e.PlanId == planId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchDay))
+            {
+                query = query.Where(e => e.Day == searchDay);
+            }
+
+            if (instructorId.HasValue && instructorId.Value > 0)
+            {
+                query = query.Where(e => e.InstructorId == instructorId.Value);
+            }
+
+            var days = await _context.Exercises
+                .Select(e => e.Day)
+                .Where(d => !string.IsNullOrEmpty(d))
+                .Distinct()
+                .OrderBy(d => d)
+                .ToListAsync();
+
+            ViewBag.PlanId = new SelectList(await _context.Plans.OrderBy(p => p.Name).ToListAsync(), "Id", "Name", planId);
+            ViewBag.InstructorId = new SelectList(await _context.Instructors.OrderBy(i => i.Name).ToListAsync(), "Id", "Name", instructorId);
+            ViewBag.Days = new SelectList(days, searchDay);
+
+            return View(await query.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)

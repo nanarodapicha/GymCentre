@@ -23,7 +23,6 @@ namespace ASPGymCentre.Controllers
             _userManager = userManager;
         }
 
-        // Само админ вижда всички резервации
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
@@ -37,34 +36,103 @@ namespace ASPGymCentre.Controllers
             return View(await reservations.ToListAsync());
         }
 
-        // Страница за user: налични тренировки + неговите резервации
-        public async Task<IActionResult> MyReservations()
+        public async Task<IActionResult> MyReservations(
+    string searchDay,
+    int? instructorId,
+    int? planId)
         {
             var userId = _userManager.GetUserId(User);
 
-            if (string.IsNullOrEmpty(userId))
-                return Challenge();
+            var exercisesQuery = _context.Exercises
+                .Include(x => x.Reservations)
+                .Include(x => x.Plans)
+                .Include(x => x.Instructors)
+                .AsQueryable();
 
-            var exercises = await _context.Exercises
-                .Include(e => e.Plans)
-                .Include(e => e.Instructors)
-                .OrderBy(e => e.Day)
-                .ThenBy(e => e.StartTime)
-                .ToListAsync();
+
+            if (!string.IsNullOrEmpty(searchDay))
+                exercisesQuery = exercisesQuery
+                    .Where(x => x.Day == searchDay);
+
+
+            if (instructorId.HasValue)
+                exercisesQuery = exercisesQuery
+                    .Where(x => x.InstructorId == instructorId);
+
+
+            if (planId.HasValue)
+                exercisesQuery = exercisesQuery
+                    .Where(x => x.PlanId == planId);
+
+
+
+            ViewBag.PlanId =
+                new SelectList(
+                    _context.Plans
+                        .OrderBy(x => x.Name)
+                        .ToList(),
+                    "Id",
+                    "Name",
+                    planId);
+
+
+
+            ViewBag.InstructorId =
+                new SelectList(
+                    _context.Instructors
+                        .OrderBy(x => x.Name)
+                        .ToList(),
+                    "Id",
+                    "Name",
+                    instructorId);
+
+
+
+            var orderedDays = new List<string>
+    {
+        "Понеделник",
+        "Вторник",
+        "Сряда",
+        "Четвъртък",
+        "Петък",
+        "Събота",
+        "Неделя"
+    };
+
+
+            var days = _context.Exercises
+                .Select(x => x.Day)
+                .Distinct()
+                .AsEnumerable()
+                .OrderBy(x => orderedDays.IndexOf(x))
+                .ToList();
+
+
+            ViewBag.Days =
+                new SelectList(
+                    days,
+                    searchDay);
+
+
+
+            ViewBag.AvailableExercises =
+                await exercisesQuery.ToListAsync();
+
+
 
             var myReservations = await _context.Reservations
-                .Where(r => r.ClientId == userId)
-                .Include(r => r.Exercises)
-                    .ThenInclude(e => e.Plans)
-                .Include(r => r.Exercises)
-                    .ThenInclude(e => e.Instructors)
-                .OrderByDescending(r => r.RegisteredDate)
+                .Where(x => x.ClientId == userId)
+                .Include(x => x.Exercises)
+                    .ThenInclude(x => x.Plans)
+                .Include(x => x.Exercises)
+                    .ThenInclude(x => x.Instructors)
+                .OrderByDescending(x => x.RegisteredDate)
                 .ToListAsync();
 
-            ViewBag.AvailableExercises = exercises;
+
+
             return View(myReservations);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reserve(int exerciseId)
@@ -75,6 +143,14 @@ namespace ASPGymCentre.Controllers
                 return Challenge();
 
             var exerciseExists = await _context.Exercises.AnyAsync(e => e.Id == exerciseId);
+            var reservationsCount = await _context.Reservations
+    .CountAsync(r => r.ExerciseId == exerciseId);
+
+            if (reservationsCount >= 15)
+            {
+                TempData["ReservationError"] = "Няма свободни места.";
+                return RedirectToAction(nameof(MyReservations));
+            }
             if (!exerciseExists)
             {
                 TempData["ReservationError"] = "Невалидна тренировка.";
@@ -129,11 +205,11 @@ namespace ASPGymCentre.Controllers
             return RedirectToAction(nameof(MyReservations));
         }
 
-        // Само админ вижда детайли
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var reservation = await _context.Reservations
                 .Include(r => r.Clients)
@@ -143,12 +219,13 @@ namespace ASPGymCentre.Controllers
                     .ThenInclude(e => e.Instructors)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (reservation == null) return NotFound();
+            if (reservation == null)
+                return NotFound();
 
             return View(reservation);
         }
 
-        // Оставяме Create, ако искаш и dropdown вариант
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             var exercises = _context.Exercises
@@ -156,42 +233,60 @@ namespace ASPGymCentre.Controllers
                 {
                     Id = e.Id,
                     Text = e.Day + " " + e.StartTime + " - " + e.EndTime
-                }).ToList();
+                })
+                .ToList();
+
+            var clients = _context.Users
+                .OrderBy(c => c.UserName)
+                .Select(c => new
+                {
+                    Id = c.Id,
+                    Text = c.UserName + " (" + c.Name + " " + c.FamilyName + ")"
+                })
+                .ToList();
 
             ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text");
+            ViewBag.ClientId = new SelectList(clients, "Id", "Text");
+
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ExerciseId")] Reservation reservation)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([Bind("ClientId,ExerciseId")] Reservation reservation)
         {
-            var userId = _userManager.GetUserId(User);
-
-            if (string.IsNullOrEmpty(userId))
-                return Challenge();
+            if (string.IsNullOrWhiteSpace(reservation.ClientId))
+            {
+                ModelState.AddModelError("ClientId", "Моля, изберете клиент.");
+            }
 
             if (reservation.ExerciseId == 0)
             {
                 ModelState.AddModelError("ExerciseId", "Моля, изберете тренировка.");
             }
 
-            reservation.ClientId = userId;
-            reservation.RegisteredDate = DateTime.Now;
+            bool alreadyReserved = false;
 
-            bool alreadyReserved = await _context.Reservations
-                .AnyAsync(r => r.ClientId == userId && r.ExerciseId == reservation.ExerciseId);
+            if (!string.IsNullOrWhiteSpace(reservation.ClientId) && reservation.ExerciseId != 0)
+            {
+                alreadyReserved = await _context.Reservations
+                    .AnyAsync(r => r.ClientId == reservation.ClientId && r.ExerciseId == reservation.ExerciseId);
+            }
 
             if (alreadyReserved)
             {
-                ModelState.AddModelError("", "Вече имате резервация за тази тренировка.");
+                ModelState.AddModelError("", "Този клиент вече има резервация за тази тренировка.");
             }
 
             if (ModelState.IsValid)
             {
+                reservation.RegisteredDate = DateTime.Now;
+
                 _context.Add(reservation);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(MyReservations));
+
+                return RedirectToAction(nameof(Index));
             }
 
             var exercises = _context.Exercises
@@ -199,30 +294,53 @@ namespace ASPGymCentre.Controllers
                 {
                     Id = e.Id,
                     Text = e.Day + " " + e.StartTime + " - " + e.EndTime
-                }).ToList();
+                })
+                .ToList();
+
+            var clients = _context.Users
+                .OrderBy(c => c.UserName)
+                .Select(c => new
+                {
+                    Id = c.Id,
+                    Text = c.UserName + " (" + c.Name + " " + c.FamilyName + ")"
+                })
+                .ToList();
 
             ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text", reservation.ExerciseId);
+            ViewBag.ClientId = new SelectList(clients, "Id", "Text", reservation.ClientId);
 
             return View(reservation);
         }
 
-        // Само админ редактира
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null) return NotFound();
+            if (reservation == null)
+                return NotFound();
 
             var exercises = _context.Exercises
                 .Select(e => new
                 {
                     Id = e.Id,
                     Text = e.Day + " " + e.StartTime + " - " + e.EndTime
-                }).ToList();
+                })
+                .ToList();
+
+            var clients = _context.Users
+                .OrderBy(c => c.UserName)
+                .Select(c => new
+                {
+                    Id = c.Id,
+                    Text = c.UserName + " (" + c.Name + " " + c.FamilyName + ")"
+                })
+                .ToList();
 
             ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text", reservation.ExerciseId);
+            ViewBag.ClientId = new SelectList(clients, "Id", "Text", reservation.ClientId);
 
             return View(reservation);
         }
@@ -232,7 +350,13 @@ namespace ASPGymCentre.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ClientId,ExerciseId")] Reservation model)
         {
-            if (id != model.Id) return NotFound();
+            if (id != model.Id)
+                return NotFound();
+
+            if (string.IsNullOrWhiteSpace(model.ClientId))
+            {
+                ModelState.AddModelError("ClientId", "Моля, изберете клиент.");
+            }
 
             if (model.ExerciseId == 0)
             {
@@ -240,11 +364,14 @@ namespace ASPGymCentre.Controllers
             }
 
             var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null) return NotFound();
+            if (reservation == null)
+                return NotFound();
 
             if (ModelState.IsValid)
             {
+                reservation.ClientId = model.ClientId;
                 reservation.ExerciseId = model.ExerciseId;
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -254,18 +381,29 @@ namespace ASPGymCentre.Controllers
                 {
                     Id = e.Id,
                     Text = e.Day + " " + e.StartTime + " - " + e.EndTime
-                }).ToList();
+                })
+                .ToList();
+
+            var clients = _context.Users
+                .OrderBy(c => c.UserName)
+                .Select(c => new
+                {
+                    Id = c.Id,
+                    Text = c.UserName + " (" + c.Name + " " + c.FamilyName + ")"
+                })
+                .ToList();
 
             ViewBag.ExerciseId = new SelectList(exercises, "Id", "Text", model.ExerciseId);
+            ViewBag.ClientId = new SelectList(clients, "Id", "Text", model.ClientId);
 
             return View(model);
         }
 
-        // Само админ трие
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var reservation = await _context.Reservations
                 .Include(r => r.Clients)
@@ -275,7 +413,8 @@ namespace ASPGymCentre.Controllers
                     .ThenInclude(e => e.Instructors)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (reservation == null) return NotFound();
+            if (reservation == null)
+                return NotFound();
 
             return View(reservation);
         }

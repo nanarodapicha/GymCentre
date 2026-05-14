@@ -20,7 +20,10 @@ namespace ASPGymCentre.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Instructors.ToListAsync());
+            return View(
+                await _context.Instructors
+                    .OrderBy(x => x.Name)
+                    .ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)

@@ -2,26 +2,43 @@
     ViewData["Title"] = "Начало";
 }
 
-<section class="home-hero">
+<section class="home-hero premium-hero">
     <div class="home-hero-overlay">
         <div class="home-hero-content">
-            <span class="hero-badge">Добре дошъл в Фитнес център „Желязна сила“</span>
+            <span class="hero-badge">Премиум фитнес среда • Модерен график • Лесни резервации</span>
 
-            <h1 class="home-hero-title">Фитнес център „Желязна сила“</h1>
+            <h1 class="home-hero-title">
+                Изгради своята <span class="text-accent">най-силна версия</span>
+            </h1>
 
             <p class="home-hero-subtitle">
-                Открий подходящите планове, разгледай тренировките, запознай се с инструкторите
-                и резервирай своята следваща тренировка лесно и бързо.
+                Разгледай плановете, открий подходящите тренировки, запознай се с инструкторите
+                и запази мястото си бързо, лесно и удобно от всяко устройство.
             </p>
 
             <div class="home-hero-actions">
-                <a class="btn btn-primary btn-lg" asp-controller="Plans" asp-action="Index">
-                    Виж плановете
+                <a class="btn btn-primary btn-lg hero-main-btn" asp-controller="Plans" asp-action="Index">
+                    Разгледай плановете
                 </a>
 
-                <a class="btn btn-outline-light btn-lg" asp-controller="Exercises" asp-action="Index">
+                <a class="btn btn-outline-light btn-lg hero-outline-btn" asp-controller="Exercises" asp-action="Index">
                     Виж тренировките
                 </a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">Премиум</span>
+                    <span class="hero-stat-label">атмосфера</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">Лесни</span>
+                    <span class="hero-stat-label">резервации</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">Гъвкав</span>
+                    <span class="hero-stat-label">график</span>
+                </div>
             </div>
         </div>
     </div>
@@ -29,83 +46,74 @@
 
 <section class="home-features-section">
     <div class="section-title-row">
-        <h2>Какво можеш да направиш</h2>
+        <div>
+            <span class="section-kicker">Основни възможности</span>
+            <h2>Всичко, което ти трябва на едно място</h2>
+        </div>
     </div>
 
-    <div class="card-grid">
-        <div class="custom-card home-card">
+    <div class="card-grid premium-grid">
+        <div class="custom-card home-card premium-card">
             <div class="custom-card-body text-center">
                 <div class="home-card-icon">🏋️</div>
                 <h3 class="custom-card-title">Планове</h3>
                 <p class="custom-card-text">
-                    Разгледай всички тренировъчни планове и намери този, който най-добре подхожда на целите ти.
+                    Разгледай наличните тренировъчни планове и избери най-подходящия за твоите цели.
                 </p>
                 <div class="custom-card-footer justify-content-center">
-                    <a asp-controller="Plans" asp-action="Index" class="btn btn-primary">
-                        Отвори
-                    </a>
+                    <a asp-controller="Plans" asp-action="Index" class="btn btn-primary">Отвори</a>
                 </div>
             </div>
         </div>
 
-        <div class="custom-card home-card">
+        <div class="custom-card home-card premium-card">
             <div class="custom-card-body text-center">
                 <div class="home-card-icon">📅</div>
                 <h3 class="custom-card-title">Тренировки</h3>
                 <p class="custom-card-text">
-                    Виж наличните тренировки по дни и часове и избери удобен за теб вариант.
+                    Провери по дни, часове и инструктори кои тренировки са най-удобни за теб.
                 </p>
                 <div class="custom-card-footer justify-content-center">
-                    <a asp-controller="Exercises" asp-action="Index" class="btn btn-primary">
-                        Отвори
-                    </a>
+                    <a asp-controller="Exercises" asp-action="Index" class="btn btn-primary">Отвори</a>
                 </div>
             </div>
         </div>
 
-        <div class="custom-card home-card">
+        <div class="custom-card home-card premium-card">
             <div class="custom-card-body text-center">
                 <div class="home-card-icon">👨‍🏫</div>
                 <h3 class="custom-card-title">Инструктори</h3>
                 <p class="custom-card-text">
-                    Запознай се с инструкторите в залата и избери тренировки с предпочитан от теб инструктор.
+                    Запознай се с нашите инструктори и избери тренировки с предпочитан специалист.
                 </p>
                 <div class="custom-card-footer justify-content-center">
-                    <a asp-controller="Instructors" asp-action="Index" class="btn btn-primary">
-                        Отвори
-                    </a>
+                    <a asp-controller="Instructors" asp-action="Index" class="btn btn-primary">Отвори</a>
                 </div>
             </div>
         </div>
 
-        <div class="custom-card home-card">
+        <div class="custom-card home-card premium-card">
             <div class="custom-card-body text-center">
                 <div class="home-card-icon">✅</div>
                 <h3 class="custom-card-title">Резервации</h3>
                 <p class="custom-card-text">
-                    Създавай резервации за тренировки и следи своите записвания на едно място.
+                    Създавай и следи своите записвания за тренировки бързо и удобно.
                 </p>
                 <div class="custom-card-footer justify-content-center">
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         @if (User.IsInRole("Admin"))
                         {
-                            <a asp-controller="Reservations" asp-action="Index" class="btn btn-primary">
-                                Отвори
-                            </a>
+                            <a asp-controller="Reservations" asp-action="Index" class="btn btn-primary">Отвори</a>
                         }
                         else
                         {
-                            <a asp-controller="Reservations" asp-action="MyReservations" class="btn btn-primary">
-                                Моите резервации
-                            </a>
+                            <a asp-controller="Reservations" asp-action="MyReservations" class="btn btn-primary">Моите резервации</a>
                         }
                     }
                     else
                     {
-                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">
-                            Влез в профила си
-                        </a>
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">Влез в профила си</a>
                     }
                 </div>
             </div>
@@ -113,19 +121,32 @@
     </div>
 </section>
 
-<section class="home-info-strip">
-    <div class="home-info-box">
-        <h2>Защо да избереш нас?</h2>
-        <p>
-            Предлагаме разнообразни планове, удобни часове за тренировки и инструктори,
-            които ще ти помогнат да постигнеш целите си.
-        </p>
-    </div>
+<section class="home-highlight-section">
+    <div class="home-highlight-box">
+        <div class="highlight-left">
+            <span class="section-kicker">Защо да избереш нас</span>
+            <h2>Тренирай в модерна и мотивираща среда</h2>
+            <p>
+                Предлагаме разнообразни планове, удобни часове за тренировки, професионални инструктори
+                и лесна система за резервации, достъпна от телефон, таблет и компютър.
+            </p>
+        </div>
 
-    <div class="home-info-box">
-        <h2>Готов ли си да започнеш?</h2>
-        <p>
-            Разгледай тренировките и направи своята първа резервация още днес.
-        </p>
+        <div class="highlight-right">
+            <div class="highlight-mini-card">
+                <strong>Удобна организация</strong>
+                <span>Програми, график и резервации в една система</span>
+            </div>
+
+            <div class="highlight-mini-card">
+                <strong>Адаптивен дизайн</strong>
+                <span>Работи удобно на всякакви устройства</span>
+            </div>
+
+            <div class="highlight-mini-card">
+                <strong>Професионални инструктори</strong>
+                <span>Избираш най-подходящия за теб</span>
+            </div>
+        </div>
     </div>
 </section>

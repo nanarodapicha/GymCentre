@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ASPGymCentre</title>
+    <title>@ViewData["Title"] - Желязна сила</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -11,13 +11,17 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg custom-navbar shadow-sm">
+        <nav class="navbar navbar-expand-lg custom-navbar">
             <div class="container">
-                <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
-                    „Желязна сила“
+                <a class="navbar-brand brand-with-logo fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo.png" alt="Лого" class="site-logo" />
+                    <div class="brand-text-wrap">
+                        <span class="brand-title">Желязна сила</span>
+                        <span class="brand-subtitle">Fitness Center</span>
+                    </div>
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                         aria-controls="mainNav" aria-expanded="false" aria-label="Превключване на менюто">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -25,19 +29,36 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav mx-auto mb-2 mb-lg-0 custom-menu">
                         <li class="nav-item">
-                            <a class="nav-link menu-btn" asp-area="" asp-controller="Home" asp-action="Index">Начало</a>
+                            <a class="nav-link menu-btn" asp-controller="Home" asp-action="Index">Начало</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link menu-btn" asp-area="" asp-controller="Plans" asp-action="Index">Планове</a>
+                            <a class="nav-link menu-btn" asp-controller="Plans" asp-action="Index">Планове</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link menu-btn" asp-area="" asp-controller="PlanCategories" asp-action="Index">Категории планове</a>
+                            <a class="nav-link menu-btn" asp-controller="Exercises" asp-action="Index">Тренировки</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link menu-btn" asp-area="" asp-controller="Exercises" asp-action="Index">Тренировки</a>
+                            <a class="nav-link menu-btn" asp-controller="Instructors" asp-action="Index">Инструктори</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-btn" asp-area="" asp-controller="Instructors" asp-action="Index">Инструктори</a>
+
+                        <li class="nav-item dropdown nav-hover-dropdown">
+                            <a class="nav-link menu-btn dropdown-toggle info-dropdown-toggle"
+                               href="#"
+                               id="infoDropdown"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                Информация
+                            </a>
+                            <ul class="dropdown-menu custom-dropdown" aria-labelledby="infoDropdown">
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="About">За нас</a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="WorkingHours">Работно време</a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="Gallery">Галерия</a></li>
+                                <li><a class="dropdown-item" asp-controller="Home" asp-action="Contacts">Контакти</a></li>
+                            </ul>
                         </li>
 
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -45,20 +66,20 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link menu-btn" asp-area="" asp-controller="Reservations" asp-action="Index">Резервации</a>
+                                    <a class="nav-link menu-btn" asp-controller="Reservations" asp-action="Index">Резервации</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link menu-btn" asp-controller="PlanCategories" asp-action="Index">Категории</a>
                                 </li>
                             }
                             else
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link menu-btn" asp-area="" asp-controller="Reservations" asp-action="MyReservations">Моите резервации</a>
+                                    <a class="nav-link menu-btn" asp-controller="Reservations" asp-action="MyReservations">Моите резервации</a>
                                 </li>
                             }
                         }
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-btn" asp-area="" asp-controller="Home" asp-action="About">За нас</a>
-                        </li>
                     </ul>
 
                     <div class="login-area">
@@ -76,10 +97,23 @@
     </div>
 
     <footer class="custom-footer">
-        <div class="container text-center">
-            &copy; 2026 - ASPGymCentre
+        <div class="container footer-inner">
+            <div>
+                <strong>Фитнес център „Желязна сила“</strong><br />
+                Място за сила, мотивация и прогрес.
+            </div>
+            <div class="text-md-end">
+                &copy; 2026 - Желязна сила
+            </div>
         </div>
     </footer>
+
+    <div id="galleryLightbox" class="gallery-lightbox">
+        <button type="button" class="gallery-close" id="galleryCloseBtn">&times;</button>
+        <button type="button" class="gallery-nav gallery-prev" id="galleryPrevBtn">&#10094;</button>
+        <img id="galleryLightboxImage" class="gallery-lightbox-image" src="" alt="Голяма снимка" />
+        <button type="button" class="gallery-nav gallery-next" id="galleryNextBtn">&#10095;</button>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

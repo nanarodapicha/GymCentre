@@ -5,53 +5,90 @@
 }
 
 <div class="section-title-row">
+
     <h1>Планове</h1>
 
     @if (User.IsInRole("Admin"))
     {
-        <a asp-action="Create" class="btn btn-primary">Създай нов план</a>
+        <a asp-action="Create"
+           class="btn btn-primary">
+
+            Създай нов план
+
+        </a>
     }
+
 </div>
+
 
 @if (Model != null && Model.Any())
 {
     <div class="card-grid">
+
         @foreach (var item in Model)
         {
             <div class="custom-card">
-                <img src="@item.Image" alt="Снимка на план" class="custom-card-img" />
+
+                <img src="@($"/images/{item.Image}")"
+                     class="custom-card-img">
 
                 <div class="custom-card-body">
-                    <div class="badge-soft">@item.PlansCategories?.Name</div>
 
-                    <h3 class="custom-card-title">@item.Name</h3>
+                    <div class="badge-soft">
+                        @item.PlansCategories?.Name
+                    </div>
 
-                    <p class="custom-card-text">@item.Description</p>
+                    <h3 class="custom-card-title">
+                        @item.Name
+                    </h3>
+
+                    <p class="custom-card-text">
+                        @item.Description
+                    </p>
 
                     <div class="custom-card-meta">
-                        <strong>Цена:</strong> @item.PriceSingleWorkout лв.
+                        <strong>Цена:</strong>
+                        @item.PriceSingleWorkout €
                     </div>
 
                     <div class="custom-card-meta">
-                        <strong>Добавен на:</strong> @item.RegisteredDate
+                        <strong>Добавен на:</strong>
+                        @item.RegisteredDate.ToShortDateString()
                     </div>
 
                     <div class="custom-card-footer">
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary btn-sm action-btn">Редактирай</a>
-                        }
-
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm action-btn">Детайли</a>
 
                         @if (User.IsInRole("Admin"))
                         {
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm action-btn">Изтрий</a>
+                            <a asp-action="Edit"
+                               asp-route-id="@item.Id"
+                               class="btn btn-primary btn-sm action-btn">
+                                Редактирай
+                            </a>
                         }
+
+                        <a asp-action="Details"
+                           asp-route-id="@item.Id"
+                           class="btn btn-info btn-sm action-btn">
+                            Детайли
+                        </a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete"
+                               asp-route-id="@item.Id"
+                               class="btn btn-danger btn-sm action-btn">
+                                Изтрий
+                            </a>
+                        }
+
                     </div>
+
                 </div>
+
             </div>
         }
+
     </div>
 }
 else

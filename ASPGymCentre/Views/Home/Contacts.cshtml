@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Контакти";
+}
+
+<section class="info-hero-box">
+    <span class="section-kicker">Свържи се с нас</span>
+    <h1>Контакти</h1>
+    <p>
+        При въпроси относно тренировките, плановете, инструкторите или резервациите,
+        можеш да се свържеш с нас чрез формата за запитване или чрез контактите по-долу.
+    </p>
+</section>
+
+<div class="info-page-grid">
+    <div class="info-card">
+        <h3>Информация за контакт</h3>
+
+        <div class="contact-item">
+            <strong>Адрес:</strong><br />
+            гр. София, бул. България 100
+        </div>
+
+        <div class="contact-item">
+            <strong>Телефон:</strong><br />
+            +359 888 123 456
+        </div>
+
+        <div class="contact-item">
+            <strong>Имейл:</strong><br />
+            info@jelqznasila.bg
+        </div>
+
+        <div class="contact-item">
+            <strong>Работно време:</strong><br />
+            Понеделник - Петък: 06:00 - 22:00<br />
+            Събота: 08:00 - 20:00<br />
+            Неделя: 09:00 - 18:00
+        </div>
+    </div>
+
+    <div class="info-card">
+        <h3>Изпрати запитване</h3>
+
+        <form class="contact-form" id="contactForm">
+            <label for="contactName">Име</label>
+            <input id="contactName" type="text" class="form-control" placeholder="Въведи име" />
+
+            <label for="contactEmail">Имейл</label>
+            <input id="contactEmail" type="email" class="form-control" placeholder="Въведи имейл" />
+
+            <label for="contactMessage">Съобщение</label>
+            <textarea id="contactMessage" class="form-control" rows="5" placeholder="Напиши съобщение"></textarea>
+
+            <button type="submit" class="btn btn-primary mt-2">Изпрати</button>
+
+            <div id="contactSuccess" class="form-message success"></div>
+            <div id="contactError" class="form-message error"></div>
+        </form>
+    </div>
+</div>
+
+<hr class="my-4" />
+
+<div class="info-card">
+    <h3>Къде се намираме</h3>
+
+    <div class="map-responsive">
+        <iframe src="https://www.google.com/maps?q=Sofia%20Bulgaria&z=13&output=embed"
+                width="100%"
+                height="350"
+                style="border:0;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+</div>
