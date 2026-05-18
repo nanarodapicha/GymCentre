@@ -1583,3 +1583,30 @@ label {
             font-size: 15px;
         }
 }
+/* MOBILE CARD SPACING */
+
+@media (max-width:768px) {
+
+    .card-grid {
+        gap: 18px;
+        padding: 0 10px;
+    }
+
+    .custom-card {
+        border-radius: 18px;
+    }
+
+    .custom-card-title {
+        font-size: 26px;
+    }
+
+    .custom-card-text,
+    .custom-card-meta {
+        font-size: 14px;
+    }
+
+    .badge-soft {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
