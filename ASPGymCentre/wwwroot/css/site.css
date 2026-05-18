@@ -1651,3 +1651,31 @@ label {
         gap: 6px;
     }
 }
+/* MOBILE NAVBAR IMPROVEMENTS */
+
+@media (max-width:768px) {
+
+    .custom-navbar {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .navbar-brand {
+        font-size: 1.4rem;
+    }
+
+    .menu-btn {
+        min-height: 48px;
+        font-size: 15px;
+    }
+
+    .login-link {
+        width: 100%;
+        text-align: center;
+    }
+
+    .site-logo {
+        width: 42px;
+        height: 42px;
+    }
+}
