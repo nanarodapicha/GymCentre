@@ -1625,3 +1625,29 @@ label {
         grid-template-columns: 1fr;
     }
 }
+/* MOBILE TABLE RESPONSIVE */
+
+@media (max-width:768px) {
+
+    .table,
+    .table-custom {
+        font-size: 14px;
+    }
+
+        .table td,
+        .table th,
+        .table-custom td,
+        .table-custom th {
+            padding: 8px;
+        }
+
+    .table-image {
+        width: 70px;
+        height: 50px;
+    }
+
+    .action-buttons {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+}
