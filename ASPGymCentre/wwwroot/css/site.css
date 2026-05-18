@@ -1533,3 +1533,53 @@ label {
     color: white;
     text-decoration: none;
 }
+/* FOOTER RESPONSIVE */
+
+.custom-footer {
+    margin-top: 60px;
+}
+
+.footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+}
+
+
+@media (max-width:768px) {
+
+    .custom-footer {
+        padding: 30px 0;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+
+        .footer-inner div {
+            width: 100%;
+        }
+
+        .footer-inner .text-md-end {
+            text-align: center !important;
+        }
+}
+
+
+@media (max-width:576px) {
+
+    .custom-footer {
+        padding: 24px 0;
+    }
+
+    .footer-inner {
+        gap: 12px;
+    }
+
+        .footer-inner strong {
+            font-size: 15px;
+        }
+}
